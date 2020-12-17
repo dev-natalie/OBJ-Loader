@@ -17,9 +17,6 @@
 // cmath - STD math Library
 #include <cmath>
 
-// Print progress to console while loading (large models)
-#define OBJL_CONSOLE_OUTPUT
-
 // Namespace: OBJL
 //
 // Description: The namespace that holds eveyrthing that
@@ -458,30 +455,9 @@ namespace objl
 
 			Mesh tempMesh;
 
-			#ifdef OBJL_CONSOLE_OUTPUT
-			const unsigned int outputEveryNth = 1000;
-			unsigned int outputIndicator = outputEveryNth;
-			#endif
-
 			std::string curline;
 			while (std::getline(file, curline))
 			{
-				#ifdef OBJL_CONSOLE_OUTPUT
-				if ((outputIndicator = ((outputIndicator + 1) % outputEveryNth)) == 1)
-				{
-					if (!meshname.empty())
-					{
-						std::cout
-							<< "\r- " << meshname
-							<< "\t| vertices > " << Positions.size()
-							<< "\t| texcoords > " << TCoords.size()
-							<< "\t| normals > " << Normals.size()
-							<< "\t| triangles > " << (Vertices.size() / 3)
-							<< (!MeshMatNames.empty() ? "\t| material: " + MeshMatNames.back() : "");
-					}
-				}
-				#endif
-
 				// Generate a Mesh Object or Prepare for an object to be created
 				if (algorithm::firstToken(curline) == "o" || algorithm::firstToken(curline) == "g" || curline[0] == 'g')
 				{
@@ -530,10 +506,6 @@ namespace objl
 							}
 						}
 					}
-					#ifdef OBJL_CONSOLE_OUTPUT
-					std::cout << std::endl;
-					outputIndicator = 0;
-					#endif
 				}
 				// Generate a Vertex Position
 				if (algorithm::firstToken(curline) == "v")
@@ -631,10 +603,6 @@ namespace objl
 						Vertices.clear();
 						Indices.clear();
 					}
-
-					#ifdef OBJL_CONSOLE_OUTPUT
-					outputIndicator = 0;
-					#endif
 				}
 				// Load Materials
 				if (algorithm::firstToken(curline) == "mtllib")
@@ -658,18 +626,10 @@ namespace objl
 
 					pathtomat += algorithm::tail(curline);
 
-					#ifdef OBJL_CONSOLE_OUTPUT
-					std::cout << std::endl << "- find materials in: " << pathtomat << std::endl;
-					#endif
-
 					// Load Materials
 					LoadMaterials(pathtomat);
 				}
 			}
-
-			#ifdef OBJL_CONSOLE_OUTPUT
-			std::cout << std::endl;
-			#endif
 
 			// Deal with last mesh
 
